@@ -1,7 +1,7 @@
 "use strict"
 
 chrome.runtime.onInstalled.addListener(onInit);
-chrome.alarms.onAlarm.addListener(loadTicker);
+onRefresh();
 
 var price = 0;
 
@@ -59,24 +59,25 @@ function prepareBadge() {
 	chrome.browserAction.setBadgeBackgroundColor({
     	color: '#808080'
 	});
+	chrome.browserAction.setBadgeText({
+		text: '...'
+	})
 }
 
 function onInit() {
 	prepareBadge();
-	chrome.alarms.create("tickerAlarm", {
-		when: Date.now()
-	});
 }
 
-function onAlarm() {
+function onRefresh() {
+	chrome.alarms.onAlarm.addListener(loadTicker);
 	chrome.alarms.create("tickerAlarm", {
 		when: Date.now(),
-		periodInMinutes: 15
+		periodInMinutes: 1
 	});
-	loadTicker();
 }
 
 async function loadTicker() {
+	console.log("loadTicker");
     await Tronix.setPrice('CAD');
     setTitle();
     setBadge();
