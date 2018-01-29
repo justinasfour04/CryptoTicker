@@ -1,6 +1,7 @@
 "use strict"
 
-chrome.runtime.onInstalled.addListener(onInstallExtension);
+chrome.runtime.onInstalled.addListener(onInit);
+chrome.alarms.onAlarm.addListener(loadTicker);
 
 var price = 0;
 
@@ -58,18 +59,21 @@ function prepareBadge() {
 	chrome.browserAction.setBadgeBackgroundColor({
     	color: '#808080'
 	});
-	chrome.browserAction.setBadgeText({
-    	text: '...'
+}
+
+function onInit() {
+	prepareBadge();
+	chrome.alarms.create("tickerAlarm", {
+		when: Date.now()
 	});
 }
 
-function onInstallExtension() {
-	prepareBadge();
-	chrome.alarms.onAlarm.addListener(loadTicker);
+function onAlarm() {
 	chrome.alarms.create("tickerAlarm", {
 		when: Date.now(),
-		periodInMinutes: 1
+		periodInMinutes: 15
 	});
+	loadTicker();
 }
 
 async function loadTicker() {
