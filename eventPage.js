@@ -1,5 +1,7 @@
 "use strict"
 
+chrome.runtime.onInstalled.addListener(onInstallExtension);
+
 var price = 0;
 
 function setTitle() {
@@ -31,29 +33,47 @@ function setBadge() {
 }
 
 var Tronix = {
-	getPrice: async function(currency) {
+	setPrice: async function(currency) {
 		try {
 			const response = await AJAX.get(["https://api.coinmarketcap.com/v1/ticker/tronix/?convert=", currency].join(""));
 			const trxData = JSON.parse(response)[0];
-			return parseFloat(trxData.price_cad);
+			if (parseFloat(trxData.price_cad) >= price) {
+				chrome.browserAction.setBadgeBackgroundColor({
+			    	color: '#2eb82e'
+				});
+			} else {
+				chrome.browserAction.setBadgeBackgroundColor({
+			    	color: '#ff0000'
+				});
+			}
+			price = parseFloat(trxData.price_cad);
+			setTimeout(() => chrome.browserAction.setBadgeBackgroundColor({ color: '#808080' }), 3000);
 		} catch (e) {
 			console.error(e);
 		}
 	}
 }
 
-window.addEventListener("load", loadBackground());
-var fetchInterval;
-async function loadBackground() {
-    chrome.browserAction.setBadgeBackgroundColor({
-    	color: '#000000'
+function prepareBadge() {
+	chrome.browserAction.setBadgeBackgroundColor({
+    	color: '#808080'
 	});
 	chrome.browserAction.setBadgeText({
     	text: '...'
 	});
+}
 
+function onInstallExtension() {
+	prepareBadge();
+	chrome.alarms.onAlarm.addListener(loadTicker);
+	chrome.alarms.create("tickerAlarm", {
+		when: Date.now(),
+		periodInMinutes: 1
+	});
+}
 
-    price = await Tronix.getPrice('CAD');
+async function loadTicker() {
+    await Tronix.setPrice('CAD');
     setTitle();
     setBadge();
 }
