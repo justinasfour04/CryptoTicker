@@ -14,6 +14,11 @@
 		"128": "128.png"
 	},
 
+	"browser_action": {
+    	"default_icon": "16.png",
+    	"default_popup": "popup.html"
+    },
+
 	"background": {
 		"scripts": ["eventPage.js"],
 		"persistent": false
@@ -23,9 +28,6 @@
 		"alarms",
 		"background",
 		"https://api.coinmarketcap.com/"
-	],
+	]
 
-	"browser_action": {
-    	"default_icon": "16.png"
-    }
 }

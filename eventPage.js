@@ -72,12 +72,11 @@ function onRefresh() {
 	chrome.alarms.onAlarm.addListener(loadTicker);
 	chrome.alarms.create("tickerAlarm", {
 		when: Date.now(),
-		periodInMinutes: 1
+		periodInMinutes: 5
 	});
 }
 
 async function loadTicker() {
-	console.log("loadTicker");
     await Tronix.setPrice('CAD');
     setTitle();
     setBadge();

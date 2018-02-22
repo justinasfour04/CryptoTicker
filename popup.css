@@ -1,0 +1,22 @@
+body {
+	min-width: 200px;
+}
+
+.heading {
+	text-align: center;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 5px;
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+}
+
+.row-item {
+	flex: 1;
+}
