@@ -1,5 +1,14 @@
 body {
-	min-width: 200px;
+	min-width: 300px;
+}
+
+select {
+	width: 125px;
+}
+
+.container {
+	margin: 0 auto;
+	width: 85%;
 }
 
 .heading {

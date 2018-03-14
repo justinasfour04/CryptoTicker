@@ -20,7 +20,7 @@
     },
 
 	"background": {
-		"scripts": ["eventPage.js"],
+		"scripts": ["shared.js", "eventPage.js"],
 		"persistent": false
 	},
 
