@@ -1,6 +1,7 @@
 "use strict";
 
 chrome.runtime.onInstalled.addListener(onInit);
+chrome.runtime.onStartup.addListener(onStartup);
 
 var AJAX = {
 	get: function(url) {
@@ -28,6 +29,9 @@ var Storage = {
 	},
 	set: function(itemsToStore) {
 		chrome.storage.sync.set(itemsToStore);
+	},
+	clear: function() {
+		chrome.storage.sync.clear();
 	}
 }
 
@@ -94,6 +98,10 @@ function prepareBadge() {
 
 function onInit() {
 	prepareBadge();
+}
+
+function onStartup() {
+	CryptoCurrency.setSettings();
 }
 
 async function loadTicker() {

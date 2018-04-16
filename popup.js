@@ -11,6 +11,7 @@ window.addEventListener("load", async () => {
 
 async function createDropdown(labelText, id, elements = {}) {
     let crypto = await Storage.get(['conversion', 'selected', 'refreshRate']);
+    crypto = Object.keys(crypto).length > 0 ? crypto : CryptoCurrency;
 
     let row = document.createElement("div");
     row.className = "row";
