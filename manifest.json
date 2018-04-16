@@ -1,21 +1,19 @@
 {
 	"manifest_version": 2,
 
-	"name": "TRX ticker",
+	"name": "CoinMarketCap Ticker",
 	"version": "1.0.0",
 
-	"description": "Tronix Price Monitor",
+	"description": "CoinMarketCap Price Monitor. The Default Ticker is set to TRX",
 	"author": "Justin Asfour <justin.asfour0@gmail.com",
 
 	"icons" : {
-		"16": "16.png",
-		"32": "32.png",
-		"48": "48.png",
-		"128": "128.png"
+		"32": "32/icon/trx.png",
+		"128": "128/icon/trx.png"
 	},
 
 	"browser_action": {
-    	"default_icon": "16.png",
+    	"default_icon": "32/icon/trx.png",
     	"default_popup": "popup.html"
     },
 
@@ -27,6 +25,7 @@
 	"permissions": [
 		"alarms",
 		"background",
+		"storage",
 		"https://api.coinmarketcap.com/"
 	]
 

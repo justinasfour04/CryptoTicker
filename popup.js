@@ -9,7 +9,9 @@ window.addEventListener("load", async () => {
 	createDropdown("Refresh Rate", "refreshrates", JSON.parse(refreshRates));
 });
 
-function createDropdown(labelText, id, elements = {}) {
+async function createDropdown(labelText, id, elements = {}) {
+    let crypto = await Storage.get(['conversion', 'selected', 'refreshRate']);
+
     let row = document.createElement("div");
     row.className = "row";
 
@@ -27,6 +29,7 @@ function createDropdown(labelText, id, elements = {}) {
             let option = document.createElement("option");
             option.text = elements[i].name;
             option.value = "{\"id\":\"" + elements[i].id + "\",\"symbol\":\"" + elements[i].symbol + "\"}";
+            if (elements[i].symbol === crypto.selected.symbol) option.selected = true;
             dropdown.appendChild(option);
         }
     } else {
@@ -34,6 +37,7 @@ function createDropdown(labelText, id, elements = {}) {
             let option = document.createElement("option");
             option.text = elements[key];
             option.value = key;
+            if (key === crypto.conversion || key === crypto.refreshRate) option.selected = true;
             dropdown.appendChild(option);
         });
     }

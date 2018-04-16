@@ -1,5 +1,7 @@
 "use strict";
 
+chrome.runtime.onInstalled.addListener(onInit);
+
 var AJAX = {
 	get: function(url) {
 		return new Promise((resolve, reject) => {
@@ -12,7 +14,20 @@ var AJAX = {
 			req.ontimeout = () => reject('timeout');
 			req.open('GET', url, true);
 			req.send();
-		})
+		});
+	}
+}
+
+var Storage = {
+	get: function(storedItems) {
+		return new Promise((resolve, reject) => {
+			chrome.storage.sync.get(storedItems, function(items) {
+				resolve(items);
+			});
+		});
+	},
+	set: function(itemsToStore) {
+		chrome.storage.sync.set(itemsToStore);
 	}
 }
 
@@ -26,6 +41,9 @@ function setBadge() {
 	chrome.browserAction.setBadgeText({
 		text: CryptoCurrency.price.toFixed(2)
 	});
+	chrome.browserAction.setIcon({
+		path: '32/icon/' + CryptoCurrency.selected.symbol.toLowerCase() + ".png"
+	})
 }
 
 var CryptoCurrency = {
@@ -36,6 +54,14 @@ var CryptoCurrency = {
 	},
 	refreshRate: "5",
 	price: 0,
+	setSettings: async function() {
+		const items = await Storage.get(['conversion', 'selected', 'refreshRate']);
+		if (Object.keys(items).length > 0) {
+			this.conversion = items.conversion;
+			this.selected = items.selected;
+			this.refreshRate = items.refreshRate;
+		}
+	},
 	setPrice: async function() {
 		try {
 			const response = await AJAX.get(["https://api.coinmarketcap.com/v1/ticker/", this.selected.id, "/?convert=", this.conversion].join(""));
@@ -71,7 +97,8 @@ function onInit() {
 }
 
 async function loadTicker() {
-    await CryptoCurrency.setPrice();
+	await CryptoCurrency.setSettings();
+	await CryptoCurrency.setPrice();
     setTitle();
     setBadge();
 }
@@ -91,6 +118,11 @@ var setMessageListener = function() {
 					CryptoCurrency.refreshRate = request.data;
 					break;
 			}
+			Storage.set({
+				'conversion': CryptoCurrency.conversion,
+				'selected': CryptoCurrency.selected,
+				'refreshRate': CryptoCurrency.refreshRate
+			});
 			loadTicker();
 			sendResponse("refreshed");
 		}
