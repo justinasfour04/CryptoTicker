@@ -9,7 +9,7 @@
 
 	"icons" : {
 		"32": "32/icon/trx.png",
-		"128": "128/icon/trx.png"
+		"128": "128.png"
 	},
 
 	"browser_action": {
