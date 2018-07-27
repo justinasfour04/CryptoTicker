@@ -53,8 +53,7 @@ function setBadge() {
 var CryptoCurrency = {
 	conversion: "CAD",
     selected: {
-		id: "tronix",
-		symbol: "TRX"
+		id: 1958
 	},
 	refreshRate: "5",
 	price: 0,
@@ -67,10 +66,16 @@ var CryptoCurrency = {
 		}
 	},
 	setPrice: async function() {
+		var parsePrice = function(jsonData) {
+			return parseFloat(jsonData.quotes[this.conversion.toUpperCase()].price);
+		}
+
 		try {
-			const response = await AJAX.get(["https://api.coinmarketcap.com/v1/ticker/", this.selected.id, "/?convert=", this.conversion].join(""));
-			const trxData = JSON.parse(response)[0];
-			if (parseFloat(trxData["price_" + this.conversion.toLowerCase()]) >= this.price) {
+			const response = await AJAX.get(["https://api.coinmarketcap.com/v2/ticker/", this.selected.id, "/?convert=", this.conversion].join(""));
+			const data = JSON.parse(response).data;
+			this.selected.symbol = data.symbol;
+			this.selected.name = data.name;
+			if (parsePrice.call(this, data) >= this.price) {
 				chrome.browserAction.setBadgeBackgroundColor({
 			    	color: '#2eb82e'
 				});
@@ -79,7 +84,7 @@ var CryptoCurrency = {
 			    	color: '#ff0000'
 				});
 			}
-			this.price = parseFloat(trxData["price_" + this.conversion.toLowerCase()]);
+			this.price = parsePrice.call(this, data); // Ensure the Cryptocurrency context is used
 			setTimeout(() => chrome.browserAction.setBadgeBackgroundColor({ color: '#808080' }), 3000);
 		} catch (e) {
 			console.error(e);
@@ -124,6 +129,10 @@ var setMessageListener = function() {
 					break;
 				case "refresh":
 					CryptoCurrency.refreshRate = request.data;
+					chrome.alarms.create("tickerAlarm", {
+						when: Date.now(),
+						periodInMinutes: parseInt(CryptoCurrency.refreshRate)
+					});
 					break;
 			}
 			Storage.set({
